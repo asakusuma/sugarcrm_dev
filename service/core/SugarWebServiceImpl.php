@@ -451,7 +451,7 @@ function set_entry($session,$module_name, $name_value_list){
 	//Check to see is bean has been re-assigned. If so, set flag
 	$assigned_user_changed = FALSE;
 	if(isset($name_value_list['assigned_user_id'])) {
-		if(!is_array($value)){
+		if(!is_array($name_value_list['assigned_user_id'])){
 			$value = $name_value_list['assigned_user_id'];
 		}else{
 			$value = $name_value_list['assigned_user_id']['value'];
