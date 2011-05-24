@@ -447,6 +447,17 @@ function set_entry($session,$module_name, $name_value_list){
 			$seed->retrieve($value);
 		}
 	}
+	
+	//Check to see is bean has been re-assigned. If so, set flag
+	$assigned_user_changed = FALSE;
+	if(isset($name_value_list['assigned_user_id'])) {
+		if(!is_array($value)){
+			$value = $name_value_list['assigned_user_id'];
+		}else{
+			$value = $name_value_list['assigned_user_id']['value'];
+		}
+		$assigned_user_changed = $value != $seed->assigned_user_id;
+	}
 
 	foreach($name_value_list as $name=>$value){
 		if($module_name == 'Users' && !empty($seed->id) && ($seed->id != $current_user->id) && $name == 'user_hash'){
@@ -462,8 +473,9 @@ function set_entry($session,$module_name, $name_value_list){
 		$GLOBALS['log']->info('End: SugarWebServiceImpl->set_entry');
     	return;
     } // if
-
-	$seed->save(self::$helperObject->checkSaveOnNotify());
+	
+	$send_notification = $assigned_user_changed && self::$helperObject->checkSaveOnNotify();
+	$seed->save($send_notification);
 	if($seed->deleted == 1){
 		$seed->mark_deleted($seed->id);
 	}
